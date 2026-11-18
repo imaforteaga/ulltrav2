@@ -1,0 +1,93 @@
+/* Motion system.
+   1. Entrances run only on navigation: <main class="anim"> exists for ~1.1 s after a route change (ui/render.js).
+   2. Data changes never replay entrances; they transition (rings, bars, numbers, FLIP rows, chart fade).
+   3. Only transform/opacity are animated (rings, line-draws and the compare slider are the SVG exceptions).
+   4. prefers-reduced-motion switches all of it off. */
+@layer motion {
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes fade-out { to { opacity: 0; } }
+  @keyframes pop { from { opacity: 0; transform: scale(.94) translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes draw { from { stroke-dashoffset: 30; } to { stroke-dashoffset: 0; } }
+  @keyframes drawline { to { stroke-dashoffset: 0; } }
+  @keyframes grow { from { transform: scaleY(0); } to { transform: none; } }
+  @keyframes sheet-in { from { transform: translateY(100%); } }
+  @keyframes sheet-out { to { transform: translateY(100%); } }
+  @keyframes toast-in { from { opacity: 0; transform: translate(-50%, 14px) scale(.96); } to { opacity: 1; transform: translate(-50%, 0); } }
+  @keyframes toast-out { to { opacity: 0; transform: translate(-50%, 8px) scale(.98); } }
+  @keyframes rtoast-in { from { opacity: 0; transform: translate(-50%, -16px) scale(.98); } to { opacity: 1; transform: translate(-50%, 0); } }
+  @keyframes fx-in { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+  @keyframes fx-fade { from { opacity: .35; } }
+
+  /* 1 · screen entrance: cards/rows rise in, staggered by --stagger */
+  .anim .card, .anim .rise { opacity: 0; animation: rise var(--dur-slow) var(--ease-out) forwards; }
+  .anim :is(.card, .rise):nth-child(2) { animation-delay: calc(var(--stagger) * 1); }
+  .anim :is(.card, .rise):nth-child(3) { animation-delay: calc(var(--stagger) * 2); }
+  .anim :is(.card, .rise):nth-child(4) { animation-delay: calc(var(--stagger) * 3); }
+  .anim :is(.card, .rise):nth-child(5) { animation-delay: calc(var(--stagger) * 4); }
+  .anim :is(.card, .rise):nth-child(6) { animation-delay: calc(var(--stagger) * 5); }
+  .anim :is(.card, .rise):nth-child(n+7) { animation-delay: calc(var(--stagger) * 6); }
+
+  /* 2 · data changes */
+  .fx-in { animation: fx-in var(--dur-base) var(--ease-out) both; }
+  .fx-fade { animation: fx-fade var(--dur-base) var(--ease-out); }
+
+  /* View Transitions (progressive enhancement): the page area cross-fades; the tab bar stays put */
+  .vt #main { view-transition-name: page; }
+  .vt #nav { view-transition-name: nav; }
+  ::view-transition-group(root) { animation-duration: 0s; }
+  ::view-transition-old(page) { animation: fade-out var(--dur-fast) var(--ease-in) both; }
+  ::view-transition-new(page) { animation: fade var(--dur-base) var(--ease-out) both; }
+
+
+  /* ---- polish ---- */
+  @keyframes slide-in-r { from { opacity: 0; transform: translateX(26px); } to { opacity: 1; transform: none; } }
+  @keyframes slide-in-l { from { opacity: 0; transform: translateX(-26px); } to { opacity: 1; transform: none; } }
+  @keyframes slide-out-l { to { opacity: 0; transform: translateX(-18px); } }
+  @keyframes slide-out-r { to { opacity: 0; transform: translateX(18px); } }
+  @keyframes check-pop { 0% { transform: scale(.7); } 55% { transform: scale(1.18); } 100% { transform: scale(1); } }
+  @keyframes burst { from { transform: scale(.7); opacity: .5; } to { transform: scale(2.1); opacity: 0; } }
+  @keyframes ring-done { from { transform: scale(.82); opacity: .55; } to { transform: scale(1.22); opacity: 0; } }
+  @keyframes ring-bump { 0%, 100% { transform: scale(1); } 45% { transform: scale(1.06); } }
+  @keyframes item-in { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+
+  /* directional page transitions: deeper → slides in from the right, back/up → from the left */
+  :root.vt[data-dir=fwd]::view-transition-old(page) { animation: slide-out-l var(--dur-fast) var(--ease-in) both; }
+  :root.vt[data-dir=fwd]::view-transition-new(page) { animation: slide-in-r var(--dur-slow) var(--ease-out) both; }
+  :root.vt[data-dir=back]::view-transition-old(page) { animation: slide-out-r var(--dur-fast) var(--ease-in) both; }
+  :root.vt[data-dir=back]::view-transition-new(page) { animation: slide-in-l var(--dur-slow) var(--ease-out) both; }
+
+  /* rows inside a card cascade in after the card itself (navigation only) */
+  .anim .list > * { opacity: 0; animation: item-in var(--dur-slow) var(--ease-out) forwards; animation-delay: calc(var(--stagger) * 3); }
+  .anim .list > :nth-child(2) { animation-delay: calc(var(--stagger) * 4); }
+  .anim .list > :nth-child(3) { animation-delay: calc(var(--stagger) * 5); }
+  .anim .list > :nth-child(4) { animation-delay: calc(var(--stagger) * 6); }
+  .anim .list > :nth-child(n+5) { animation-delay: calc(var(--stagger) * 7); }
+
+  /* springy press: quick in, soft elastic release */
+  .tap, .btn, .chip, .icon-btn { transition: transform var(--dur-slow) var(--ease-spring), opacity var(--dur-fast), background var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out); }
+  .tap:active, .btn:active, .chip:active, .icon-btn:active { transition-duration: var(--dur-fast), var(--dur-fast), var(--dur-base), var(--dur-base); transition-timing-function: var(--ease-out); }
+  .card.tap:active { transform: scale(.985); }
+
+  /* a habit/check that just turned on pops and sends out a soft ring */
+  .check.pop { animation: check-pop 420ms var(--ease-out); }
+  .check.pop::before { content: ""; position: absolute; inset: -1px; border-radius: 50%; border: 2px solid var(--accent); animation: burst 560ms var(--ease-out) forwards; pointer-events: none; }
+
+  /* a ring that reaches 100 % bumps once and sends out a halo */
+  .ring.full { animation: ring-bump 700ms var(--ease-out) var(--dur-ring) 1; }
+  .ring.full::before { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--accent); opacity: 0; animation: ring-done 900ms var(--ease-out) var(--dur-ring) 1; pointer-events: none; }
+
+  /* sliding indicator behind the active tab (transform only) */
+  #nav .nav-ind { display: block; position: absolute; left: 0; top: 0; z-index: 0; width: var(--iw, 0px); height: var(--ih, 0px); border-radius: var(--r-sm); background: var(--soft); transform: translate(var(--ix, 0px), var(--iy, 0px)); opacity: 0; pointer-events: none; }
+  #nav .nav-ind.ready { opacity: 1; transition: transform var(--dur-slow) var(--ease-spring), width var(--dur-base) var(--ease-out), height var(--dur-base) var(--ease-out); }
+  #nav button { z-index: 1; }
+  #nav .brand { position: relative; z-index: 1; }
+  #sheet .scrim { backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0s !important; scroll-behavior: auto !important; }
+    .anim .card, .anim .rise, .anim .list > * { opacity: 1; }
+    #nav .nav-ind.ready { transition: none; }
+    .chart path.line { stroke-dashoffset: 0; }
+  }
+}

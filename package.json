@@ -1,0 +1,17 @@
+{
+  "name": "ultra",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Ultra: seguimiento personal de entrenamiento, nutrición, hábitos y finanzas. PWA estática, todo local.",
+  "scripts": {
+    "serve": "node scripts/serve.mjs",
+    "build": "node scripts/build-sw.mjs",
+    "test": "node --test \"tests/unit/**/*.test.js\"",
+    "test:e2e": "node --test --test-concurrency=1 \"tests/e2e/**/*.test.js\"",
+    "test:all": "npm run test && npm run test:e2e"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}

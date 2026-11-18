@@ -1,0 +1,52 @@
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; background: var(--bg); color: var(--text); font-family: var(--font);
+    font-size: 16px; line-height: 1.4; -webkit-font-smoothing: antialiased;
+    transition: background var(--dur-slow) var(--ease-out), color var(--dur-slow) var(--ease-out);
+  }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; border: 0; background: none; padding: 0; touch-action: manipulation; }
+  [data-act] { touch-action: manipulation; }
+  h1, h2, h3, p { margin: 0; }
+  .hide { display: none !important; }
+
+  /* layout: bottom tab bar on phones, side rail on desktop */
+  #app { display: flex; min-height: 100vh; }
+  #nav {
+    position: fixed; z-index: 20; background: var(--card); border-top: 1px solid var(--line); bottom: 0; left: 0; right: 0;
+    display: flex; justify-content: space-around; padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+  }
+  #nav button {
+    position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; color: var(--text2);
+    padding: 6px 10px; border-radius: var(--r-sm); flex: 1; min-width: 0; min-height: var(--tap);
+    transition: color var(--dur-base) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+  }
+  #nav button svg { width: 22px; height: 22px; transition: transform var(--dur-base) var(--ease-spring); }
+  #nav button.on { color: var(--accent); }
+  #nav button.on svg { transform: translateY(-1px) scale(1.08); }
+  #nav button:active { transform: scale(.94); }
+  #nav .brand { display: none; }
+  main { flex: 1; width: 100%; max-width: 760px; margin: 0 auto; padding: 22px 18px 110px; }
+  @media (max-width: 520px) { #nav button { font-size: 10.5px; padding: 6px 2px; } }
+  @media (min-width: 900px) {
+    #nav {
+      top: 0; bottom: auto; right: auto; width: 220px; height: 100vh; flex-direction: column; justify-content: flex-start;
+      border-top: 0; border-right: 1px solid var(--line); padding: 26px 14px; gap: 4px;
+    }
+    #nav .brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-serif); font-size: 26px; font-weight: 500; letter-spacing: -.01em; padding: 0 12px 22px; }
+    #nav .brand img { border-radius: 8px; }
+    #nav button { flex: none; flex-direction: row; gap: 12px; font-size: 15px; padding: 11px 12px; width: 100%; justify-content: flex-start; }
+    main { margin-left: 220px; max-width: none; padding: 34px 40px 60px; }
+    main > .wrap { max-width: 760px; margin: 0 auto; }
+  }
+
+  /* type */
+  .num { font-weight: 300; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+  .muted { color: var(--text2); } .small { font-size: 13px; } .tiny { font-size: 11.5px; }
+  .accent { color: var(--accentText); }
+  .title { font-family: var(--font-serif); font-size: 34px; font-weight: 500; letter-spacing: -.02em; line-height: 1.08; font-optical-sizing: auto; }
+  .h2 { font-family: var(--font-serif); font-size: 22px; font-weight: 500; letter-spacing: -.01em; font-optical-sizing: auto; }
+  .eyebrow { font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--text2); font-weight: 500; }
+  svg text { font-family: inherit; }
+}

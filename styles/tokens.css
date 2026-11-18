@@ -1,0 +1,55 @@
+/* Fonts: SF Pro is the system UI face on iPhone/Mac (-apple-system). Inter is the stand-in where SF Pro does not exist.
+   Newsreader (a quiet, editorial serif) is the complement for titles and verses; both are bundled so the app works offline. */
+@font-face { font-family: "Inter"; src: url(../assets/fonts/inter-latin-opsz-normal.woff2) format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Newsreader"; src: url(../assets/fonts/newsreader-latin-opsz-normal.woff2) format("woff2"); font-weight: 200 800; font-style: normal; font-display: swap; }
+@font-face { font-family: "Newsreader"; src: url(../assets/fonts/newsreader-latin-opsz-italic.woff2) format("woff2"); font-weight: 200 800; font-style: italic; font-display: swap; }
+
+/* Cascade layers: later layers win regardless of selector specificity, so utilities can always override components. */
+@layer tokens, base, components, motion, utilities;
+
+@layer tokens {
+  :root {
+    color-scheme: light dark;
+
+    /* palette — warm paper + ink + green accent */
+    --bg: #f7f5f0; --card: #fff; --alt: #efece5; --text: #1c1c1a; --text2: #8a8780; --line: #e6e2da;
+    --accent: #4f7d5e; --accent2: #3f6b4e; --tint: #9dbfa8; --soft: #e4eee6; --accentText: #3f6b4e; --danger: #b4543a;
+    --shadow: 0 6px 18px rgba(0, 0, 0, .035);
+    --shadow-pop: 0 8px 24px rgba(0, 0, 0, .2);
+
+    /* space / radius / touch */
+    --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px; --sp-6: 28px;
+    --r-sm: 12px; --r-md: 16px; --r-lg: 20px; --r-xl: 26px; --r-pill: 999px;
+    --tap: 44px;
+
+    /* type: SF Pro for UI and numbers, Newsreader for titles and verses */
+    --font: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI Variable Display", "Segoe UI", system-ui, Roboto, sans-serif;
+    --font-serif: "Newsreader", "New York", ui-serif, Georgia, "Times New Roman", serif;
+
+    /* motion — durations, curves and the stagger step. JS reads these too (ui/motion.js). */
+    --dur-fast: 150ms;      /* press feedback, small fades */
+    --dur-base: 280ms;      /* most state changes */
+    --dur-slow: 480ms;      /* entrances, sheets */
+    --dur-ring: 900ms;      /* rings and progress bars catching up with new data */
+    --stagger: 50ms;        /* delay step between siblings on screen entrance */
+    --ease-out: cubic-bezier(.22, .8, .24, 1);
+    --ease-in: cubic-bezier(.4, 0, 1, 1);
+    --ease-sheet: cubic-bezier(.2, .9, .3, 1);         /* settles without overshoot (a sheet must not lift off the screen edge) */
+    --ease-spring: cubic-bezier(.34, 1.4, .64, 1);     /* small playful pops */
+    --ease: var(--ease-out);                            /* legacy alias */
+  }
+  @supports (transition-timing-function: linear(0, 1)) {
+    :root { --ease-spring: linear(0, .32, .66, .9, 1.03, 1.06, 1.04, 1.015, 1, .995, 1); }   /* real spring, ~6 % overshoot */
+  }
+
+  :root[data-theme=dark] {
+    --bg: #111211; --card: #1a1b19; --alt: #262826; --text: #f2f1ec; --text2: #9a9890; --line: #2f312e;
+    --soft: #203026; --accentText: #a6cdb1; --shadow: 0 6px 18px rgba(0, 0, 0, .3); --danger: #e08a6f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme=light]) {
+      --bg: #111211; --card: #1a1b19; --alt: #262826; --text: #f2f1ec; --text2: #9a9890; --line: #2f312e;
+      --soft: #203026; --accentText: #a6cdb1; --shadow: 0 6px 18px rgba(0, 0, 0, .3); --danger: #e08a6f;
+    }
+  }
+}
